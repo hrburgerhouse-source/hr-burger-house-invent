@@ -55,13 +55,13 @@ function validatePin() {
 // ── Cambiar PIN ──────────────────────────────────────────────────
 function setupPinModal() {
   document.getElementById('btnCerrarSesion').addEventListener('click', () => {
-    if (confirm('¿Cerrar sesión del panel admin?')) {
-      sessionStorage.removeItem(AUTH_KEY);
-      pinInput = '';
-      updatePinDisplay();
-      document.getElementById('pinError').classList.add('hidden');
-      document.getElementById('loginScreen').classList.remove('hidden');
-    }
+    sessionStorage.removeItem(AUTH_KEY);
+    pinInput = '';
+    updatePinDisplay();
+    document.getElementById('pinError').classList.add('hidden');
+    const ls = document.getElementById('loginScreen');
+    ls.classList.remove('hidden');
+    ls.style.display = 'flex';
   });
 
   document.getElementById('btnCambiarPin').addEventListener('click', () => {
