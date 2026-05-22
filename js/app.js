@@ -16,15 +16,9 @@ function cargarCatalogo() {
     .onSnapshot(snap => {
       catalogoProductos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       renderSelector();
-    }, () => {
-      // Si no hay datos en Firestore, usar products.js como respaldo
-      catalogoProductos = [];
-      PRODUCTS.forEach(cat => {
-        cat.items.forEach(item => {
-          catalogoProductos.push({ id: item.id, nombre: item.name, categoria: cat.name, unidad: item.unit, activo: true });
-        });
-      });
-      renderSelector();
+    }, err => {
+      console.error(err);
+      showToast('Error al cargar productos. Verifica tu conexión.', 'error');
     });
 }
 
@@ -40,6 +34,15 @@ function renderSelector() {
   });
 
   sel.innerHTML = '<option value="">Seleccionar producto...</option>';
+
+  if (catalogoProductos.length === 0) {
+    const op = document.createElement('option');
+    op.disabled = true;
+    op.textContent = '— Sin productos disponibles —';
+    sel.appendChild(op);
+    return;
+  }
+
   Object.entries(grupos).forEach(([cat, items]) => {
     const og = document.createElement('optgroup');
     og.label = cat;
