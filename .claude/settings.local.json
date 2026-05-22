@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Rename-Item *)",
+      "Bash(git --version)",
+      "Bash(gh --version)",
+      "Bash(winget install *)",
+      "Bash(gh auth *)",
+      "PowerShell(gh auth *)",
+      "PowerShell(Test-Path *)"
+    ]
+  }
+}

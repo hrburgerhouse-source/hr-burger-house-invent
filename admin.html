@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin — HR Burger House</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo">
+        <img src="logo.jpeg" alt="HR Burger House" class="logo-img">
+        <span class="logo-text">HR <strong>Burger House</strong></span>
+      </div>
+      <nav class="nav">
+        <a href="index.html" class="nav-link">Nueva Solicitud</a>
+        <a href="admin.html" class="nav-link active">Panel Admin</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+
+    <div class="page-hero">
+      <h1>Panel de Administración</h1>
+      <p>Gestiona y aprueba las solicitudes de productos en tiempo real.</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="statTotal">—</div>
+        <div class="stat-label">Total solicitudes</div>
+      </div>
+      <div class="stat-card pending">
+        <div class="stat-value" id="statPending">—</div>
+        <div class="stat-label">Pendientes</div>
+      </div>
+      <div class="stat-card approved">
+        <div class="stat-value" id="statApproved">—</div>
+        <div class="stat-label">Aprobadas</div>
+      </div>
+      <div class="stat-card rejected">
+        <div class="stat-value" id="statRejected">—</div>
+        <div class="stat-label">Rechazadas</div>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card" style="padding:16px 24px; margin-bottom:var(--gap);">
+      <div class="filters">
+        <div class="form-group">
+          <label>Estado</label>
+          <select id="filterStatus">
+            <option value="">Todos</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="aprobado">Aprobado</option>
+            <option value="rechazado">Rechazado</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Prioridad</label>
+          <select id="filterPriority">
+            <option value="">Todas</option>
+            <option value="urgente">Urgente</option>
+            <option value="normal">Normal</option>
+            <option value="programado">Programado</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Buscar</label>
+          <input type="text" id="filterSearch" placeholder="Nombre, área...">
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Solicitante</th>
+              <th class="hide-sm">Área</th>
+              <th>Prioridad</th>
+              <th class="hide-sm">Productos</th>
+              <th>Estado</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr><td colspan="7" class="loading-row">Cargando solicitudes...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Modal de detalle -->
+<div id="modal" class="modal hidden">
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modalTitle">Detalle de Solicitud</h3>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<!-- Firebase Compat -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- EmailJS (needed for config.js init) -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<!-- App -->
+<script src="js/config.js"></script>
+<script src="js/products.js"></script>
+<script src="js/admin.js"></script>
+
+</body>
+</html>

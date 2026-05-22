@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitud de Productos — HR Burger House</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo">
+        <img src="logo.jpeg" alt="HR Burger House" class="logo-img">
+        <span class="logo-text">HR <strong>Burger House</strong></span>
+      </div>
+      <nav class="nav">
+        <a href="index.html" class="nav-link active">Nueva Solicitud</a>
+        <a href="admin.html" class="nav-link">Panel Admin</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+
+    <div class="page-hero">
+      <h1>Nueva Solicitud de Productos</h1>
+      <p>Completa el formulario para solicitar productos al almacén. Se enviará una notificación por correo.</p>
+    </div>
+
+    <form id="requestForm" novalidate>
+
+      <!-- Información del solicitante -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">👤</span>
+          <h2>Información del Solicitante</h2>
+        </div>
+        <div class="form-grid cols-2">
+          <div class="form-group">
+            <label for="solicitante">Nombre completo <span class="required">*</span></label>
+            <input type="text" id="solicitante" placeholder="Tu nombre completo" required>
+          </div>
+          <div class="form-group">
+            <label for="area">Área / Puesto <span class="required">*</span></label>
+            <select id="area" required>
+              <option value="">Seleccionar área...</option>
+              <option>Cocina</option>
+              <option>Caja</option>
+              <option>Almacén</option>
+              <option>Gerencia</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="prioridad">Prioridad <span class="required">*</span></label>
+            <select id="prioridad" required>
+              <option value="normal">Normal</option>
+              <option value="urgente">🔴 Urgente</option>
+              <option value="programado">🗓️ Programado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="fechaRequerida">Fecha requerida <span class="required">*</span></label>
+            <input type="date" id="fechaRequerida" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- Productos (generado dinámicamente por app.js) -->
+      <div id="productSections"></div>
+
+      <!-- Notas y correo -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">📝</span>
+          <h2>Notas y Envío</h2>
+        </div>
+        <div class="form-grid cols-2">
+          <div class="form-group full-width">
+            <label for="notas">Observaciones adicionales</label>
+            <textarea id="notas" rows="3" placeholder="Instrucciones especiales, proveedor preferido, urgencias, etc."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="correoDestino">Notificar al correo <span class="required">*</span></label>
+            <input type="email" id="correoDestino" placeholder="encargado@empresa.com" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen de selección -->
+      <div id="summaryCard" class="card summary-card hidden">
+        <div class="card-header">
+          <span class="card-icon">🛒</span>
+          <h2>Resumen de la solicitud</h2>
+        </div>
+        <div id="summaryList"></div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" id="clearBtn" class="btn btn-ghost">Limpiar formulario</button>
+        <button type="submit" class="btn btn-primary">
+          <span>📤</span> Enviar Solicitud
+        </button>
+      </div>
+
+    </form>
+  </div>
+</main>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<!-- Overlay de carga -->
+<div id="overlay" class="overlay hidden">
+  <div class="overlay-content">
+    <div class="spinner"></div>
+    <p>Enviando solicitud...</p>
+  </div>
+</div>
+
+<!-- Firebase Compat -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<!-- App -->
+<script src="js/config.js"></script>
+<script src="js/products.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
