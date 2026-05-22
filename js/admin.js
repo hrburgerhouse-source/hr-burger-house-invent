@@ -45,6 +45,8 @@ function validatePin() {
     setupFilters();
     setupModal();
     setupPinModal();
+    setupTabs();
+    initCatalogo();
   } else {
     document.getElementById('pinError').classList.remove('hidden');
     pinInput = '';
