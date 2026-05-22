@@ -301,16 +301,33 @@ function openDetail(id) {
   `;
 
   const isOpen = req.estado === 'pendiente';
-  document.getElementById('modalFooter').innerHTML = isOpen ? `
-    <button class="btn btn-ghost btn-sm" onclick="updateStatus('${req.id}','rechazado')">✗ Rechazar</button>
-    <button class="btn btn-primary btn-sm" onclick="updateStatus('${req.id}','aprobado')">✓ Aprobar solicitud</button>
-  ` : `<button class="btn btn-ghost btn-sm" onclick="updateStatus('${req.id}','pendiente')">↩ Restablecer a pendiente</button>`;
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn btn-ghost btn-sm" style="color:var(--danger);margin-right:auto" onclick="eliminarSolicitud('${req.id}')">🗑 Eliminar</button>
+    ${isOpen ? `
+      <button class="btn btn-ghost btn-sm" onclick="updateStatus('${req.id}','rechazado')">✗ Rechazar</button>
+      <button class="btn btn-primary btn-sm" onclick="updateStatus('${req.id}','aprobado')">✓ Aprobar</button>
+    ` : `
+      <button class="btn btn-ghost btn-sm" onclick="updateStatus('${req.id}','pendiente')">↩ Restablecer</button>
+    `}
+  `;
 
   document.getElementById('modal').classList.remove('hidden');
 }
 
 function closeModal() {
   document.getElementById('modal').classList.add('hidden');
+}
+
+async function eliminarSolicitud(id) {
+  if (!confirm('¿Eliminar esta solicitud permanentemente?')) return;
+  try {
+    await db.collection('solicitudes').doc(id).delete();
+    closeModal();
+    showToast('Solicitud eliminada.', 'success');
+  } catch (err) {
+    console.error(err);
+    showToast('Error al eliminar.', 'error');
+  }
 }
 
 async function updateStatus(id, newStatus) {
