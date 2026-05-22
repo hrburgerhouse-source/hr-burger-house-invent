@@ -226,7 +226,7 @@ function renderTable(requests) {
   }
   tbody.innerHTML = requests.map(req => `
     <tr>
-      <td class="td-date">${formatTs(req.createdAt)}</td>
+      <td class="td-date">${formatTsTabla(req.createdAt)}</td>
       <td><strong>${req.solicitante}</strong><br><small class="text-muted">${req.area}</small></td>
       <td class="hide-sm">${req.area}</td>
       <td>${badgePriority(req.prioridad)}</td>
@@ -344,10 +344,20 @@ async function updateStatus(id, newStatus) {
 }
 
 // ── Formatters ───────────────────────────────────────────────────
+function formatTsTabla(ts) {
+  if (!ts) return '—';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  const fecha = d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+  const hora  = d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+  return `<span style="font-weight:600">${fecha}</span><br><small style="color:var(--text-muted)">${hora}</small>`;
+}
+
 function formatTs(ts) {
   if (!ts) return '—';
   const d = ts.toDate ? ts.toDate() : new Date(ts);
-  return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const fecha = d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+  const hora  = d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+  return `${fecha} — ${hora}`;
 }
 
 
