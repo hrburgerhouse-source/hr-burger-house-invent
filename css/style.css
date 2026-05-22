@@ -260,6 +260,41 @@ small.text-muted { font-size: 12px; color: var(--text-muted); }
 .hidden { display: none !important; }
 .text-muted { color: var(--text-muted); }
 
+/* ── Tabs ────────────────────────────────────────────────────── */
+.tabs { display: flex; gap: 8px; margin-bottom: var(--gap); }
+.tab {
+  padding: 10px 20px; font-size: 14px; font-weight: 600;
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--radius); color: var(--text-muted);
+  cursor: pointer; transition: all .15s;
+}
+.tab:hover { color: var(--text); background: var(--surface-2); }
+.tab.active { color: var(--primary); border-color: var(--primary); background: rgba(255,107,53,.08); }
+
+/* ── Add product row ─────────────────────────────────────────── */
+.add-product-row { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 20px; }
+.add-product-row .form-group { flex: 1; min-width: 140px; }
+.add-btn-group { flex: none !important; }
+
+/* ── Cart ────────────────────────────────────────────────────── */
+.cart-empty { color: var(--text-muted); font-size: 14px; text-align: center; padding: 24px 0; }
+.cart-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.cart-table th { padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); border-bottom: 2px solid var(--border); }
+.cart-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.cart-table tr:last-child td { border-bottom: none; }
+.cart-qty { font-weight: 700; color: var(--primary); }
+.cart-count { font-size: 13px; color: var(--text-muted); margin-top: 12px; text-align: right; }
+.btn-remove { background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: all .15s; }
+.btn-remove:hover { color: var(--danger); background: rgba(239,68,68,.1); }
+
+/* ── Toggle switch ───────────────────────────────────────────── */
+.toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.toggle input { width: 36px; height: 20px; appearance: none; background: var(--border); border-radius: 99px; cursor: pointer; transition: background .2s; position: relative; }
+.toggle input::after { content: ''; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; background: #fff; border-radius: 50%; transition: transform .2s; }
+.toggle input:checked { background: var(--success); }
+.toggle input:checked::after { transform: translateX(16px); }
+.toggle-label { font-size: 13px; font-weight: 500; color: var(--text-muted); }
+
 /* ── Login PIN screen ────────────────────────────────────────── */
 .login-screen {
   position: fixed; inset: 0; z-index: 500;

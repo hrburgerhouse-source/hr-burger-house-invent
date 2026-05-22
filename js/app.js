@@ -1,81 +1,129 @@
+let cart = [];
+let catalogoProductos = [];
+
 document.addEventListener('DOMContentLoaded', () => {
-  renderProductSections();
+  cargarCatalogo();
   setMinDate();
   document.getElementById('requestForm').addEventListener('submit', handleSubmit);
   document.getElementById('clearBtn').addEventListener('click', handleClear);
 });
 
-// ── Render ──────────────────────────────────────────────────────
-function renderProductSections() {
-  const container = document.getElementById('productSections');
-
-  PRODUCTS.forEach(cat => {
-    const section = document.createElement('div');
-    section.className = 'card';
-    section.innerHTML = `
-      <div class="card-header">
-        <span class="card-icon">${cat.icon}</span>
-        <h2>${cat.name}</h2>
-      </div>
-      <div class="product-grid">
-        ${cat.items.map(item => `
-          <div class="product-item" id="wrap-${item.id}">
-            <span class="product-name">${item.name}</span>
-            <div class="product-input">
-              <input
-                type="number"
-                id="${item.id}"
-                min="0" step="1" value="0"
-                data-unit="${item.unit}"
-                data-name="${item.name}"
-                data-cat="${cat.name}"
-                oninput="onQtyChange(this)"
-              >
-              <span class="product-unit">${item.unit}</span>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `;
-    container.appendChild(section);
-  });
-}
-
-function onQtyChange(input) {
-  const qty = parseFloat(input.value) || 0;
-  if (qty < 0) input.value = 0;
-  document.getElementById('wrap-' + input.id).classList.toggle('active', qty > 0);
-  updateSummary();
-}
-
-function updateSummary() {
-  const selected = getSelected();
-  const card = document.getElementById('summaryCard');
-  const list = document.getElementById('summaryList');
-
-  if (selected.length === 0) { card.classList.add('hidden'); return; }
-
-  card.classList.remove('hidden');
-  list.innerHTML = `<div class="summary-tags">${
-    selected.map(p => `
-      <span class="summary-tag">${p.name}: <strong>${p.cantidad} ${p.unit}</strong></span>
-    `).join('')
-  }</div>`;
-}
-
-function getSelected() {
-  const result = [];
-  PRODUCTS.forEach(cat => {
-    cat.items.forEach(item => {
-      const input = document.getElementById(item.id);
-      const qty = parseFloat(input?.value) || 0;
-      if (qty > 0) result.push({ id: item.id, name: item.name, unit: item.unit, cantidad: qty, categoria: cat.name });
+// ── Cargar catálogo desde Firestore ─────────────────────────────
+function cargarCatalogo() {
+  db.collection('productos')
+    .where('activo', '==', true)
+    .orderBy('categoria')
+    .onSnapshot(snap => {
+      catalogoProductos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderSelector();
+    }, () => {
+      // Si no hay datos en Firestore, usar products.js como respaldo
+      catalogoProductos = [];
+      PRODUCTS.forEach(cat => {
+        cat.items.forEach(item => {
+          catalogoProductos.push({ id: item.id, nombre: item.name, categoria: cat.name, unidad: item.unit, activo: true });
+        });
+      });
+      renderSelector();
     });
-  });
-  return result;
 }
 
-// ── Form handling ────────────────────────────────────────────────
+function renderSelector() {
+  const sel = document.getElementById('selectProducto');
+  const val = sel.value;
+
+  // Agrupar por categoría
+  const grupos = {};
+  catalogoProductos.forEach(p => {
+    if (!grupos[p.categoria]) grupos[p.categoria] = [];
+    grupos[p.categoria].push(p);
+  });
+
+  sel.innerHTML = '<option value="">Seleccionar producto...</option>';
+  Object.entries(grupos).forEach(([cat, items]) => {
+    const og = document.createElement('optgroup');
+    og.label = cat;
+    items.forEach(p => {
+      const op = document.createElement('option');
+      op.value = p.id;
+      op.textContent = p.nombre;
+      op.dataset.unidad = p.unidad;
+      op.dataset.nombre = p.nombre;
+      op.dataset.categoria = p.categoria;
+      og.appendChild(op);
+    });
+    sel.appendChild(og);
+  });
+
+  sel.value = val;
+}
+
+function onProductoChange(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  document.getElementById('unidadLabel').textContent = opt?.dataset?.unidad || '—';
+  document.getElementById('inputCantidad').value = 1;
+}
+
+// ── Carrito ──────────────────────────────────────────────────────
+function agregarProducto() {
+  const sel = document.getElementById('selectProducto');
+  const opt = sel.options[sel.selectedIndex];
+  const cantidad = parseFloat(document.getElementById('inputCantidad').value) || 0;
+
+  if (!sel.value) { showToast('Selecciona un producto.', 'error'); return; }
+  if (cantidad <= 0) { showToast('Ingresa una cantidad válida.', 'error'); return; }
+
+  const yaExiste = cart.find(c => c.id === sel.value);
+  if (yaExiste) {
+    yaExiste.cantidad += cantidad;
+  } else {
+    cart.push({
+      id:        sel.value,
+      nombre:    opt.dataset.nombre,
+      categoria: opt.dataset.categoria,
+      unidad:    opt.dataset.unidad,
+      cantidad
+    });
+  }
+
+  sel.value = '';
+  document.getElementById('inputCantidad').value = 1;
+  document.getElementById('unidadLabel').textContent = '—';
+  renderCart();
+}
+
+function removerProducto(id) {
+  cart = cart.filter(c => c.id !== id);
+  renderCart();
+}
+
+function renderCart() {
+  const container = document.getElementById('cartList');
+  if (cart.length === 0) {
+    container.innerHTML = '<p class="cart-empty">Aún no has agregado productos a la solicitud.</p>';
+    return;
+  }
+  container.innerHTML = `
+    <table class="cart-table">
+      <thead>
+        <tr><th>Producto</th><th>Categoría</th><th>Cantidad</th><th></th></tr>
+      </thead>
+      <tbody>
+        ${cart.map(p => `
+          <tr>
+            <td><strong>${p.nombre}</strong></td>
+            <td class="text-muted">${p.categoria}</td>
+            <td><span class="cart-qty">${p.cantidad} ${p.unidad}</span></td>
+            <td><button type="button" class="btn-remove" onclick="removerProducto('${p.id}')">✕</button></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    <p class="cart-count">${cart.length} producto(s) en la solicitud</p>
+  `;
+}
+
+// ── Formulario ───────────────────────────────────────────────────
 function setMinDate() {
   const today = new Date().toISOString().split('T')[0];
   const el = document.getElementById('fechaRequerida');
@@ -86,12 +134,7 @@ function setMinDate() {
 async function handleSubmit(e) {
   e.preventDefault();
   if (!validateForm()) return;
-
-  const productos = getSelected();
-  if (productos.length === 0) {
-    showToast('Agrega al menos un producto a la solicitud.', 'error');
-    return;
-  }
+  if (cart.length === 0) { showToast('Agrega al menos un producto.', 'error'); return; }
 
   showOverlay(true);
 
@@ -102,9 +145,9 @@ async function handleSubmit(e) {
     fechaRequerida: document.getElementById('fechaRequerida').value,
     notas:          document.getElementById('notas').value.trim(),
     correoDestino:  document.getElementById('correoDestino').value.trim(),
-    productos,
-    estado:    'pendiente',
-    createdAt: new Date().toISOString()
+    productos:      cart,
+    estado:         'pendiente',
+    createdAt:      new Date().toISOString()
   };
 
   try {
@@ -115,23 +158,21 @@ async function handleSubmit(e) {
     resetForm();
   } catch (err) {
     showOverlay(false);
-    console.error('ERROR DETALLADO:', err);
     if (err.emailError) {
       showToast('Solicitud guardada, pero el correo no pudo enviarse.', 'info');
       resetForm();
     } else {
-      showToast('Error: ' + err.message, 'error');
+      console.error(err);
+      showToast('Error al guardar. Verifica tu conexión.', 'error');
     }
   }
 }
 
 async function enviarCorreo(solicitud, docId) {
   const productosTexto = solicitud.productos
-    .map(p => `• ${p.name}: ${p.cantidad} ${p.unit}`)
+    .map(p => `• ${p.nombre}: ${p.cantidad} ${p.unidad}`)
     .join('\n');
-
   const prioridadLabel = { normal: 'Normal', urgente: '🔴 URGENTE', programado: '🗓️ Programado' };
-
   try {
     await emailjs.send(emailjsConfig.serviceId, emailjsConfig.templateId, {
       to_email:        solicitud.correoDestino,
@@ -144,10 +185,8 @@ async function enviarCorreo(solicitud, docId) {
       productos:       productosTexto,
       notas:           solicitud.notas || 'Sin observaciones adicionales'
     });
-  } catch (err) {
-    const e = new Error('email');
-    e.emailError = true;
-    throw e;
+  } catch {
+    const e = new Error('email'); e.emailError = true; throw e;
   }
 }
 
@@ -166,22 +205,16 @@ function validateForm() {
 }
 
 function handleClear() {
-  if (!confirm('¿Limpiar todo el formulario?')) return;
+  if (!confirm('¿Limpiar el formulario?')) return;
   resetForm();
 }
 
 function resetForm() {
   document.getElementById('requestForm').reset();
   setMinDate();
-  PRODUCTS.forEach(cat => {
-    cat.items.forEach(item => {
-      const input = document.getElementById(item.id);
-      if (input) input.value = 0;
-      const wrap = document.getElementById('wrap-' + item.id);
-      if (wrap) wrap.classList.remove('active');
-    });
-  });
-  document.getElementById('summaryCard').classList.add('hidden');
+  cart = [];
+  renderCart();
+  document.getElementById('unidadLabel').textContent = '—';
 }
 
 // ── Helpers ──────────────────────────────────────────────────────

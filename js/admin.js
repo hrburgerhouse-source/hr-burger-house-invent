@@ -102,7 +102,101 @@ document.addEventListener('DOMContentLoaded', () => {
   setupFilters();
   setupModal();
   setupPinModal();
+  setupTabs();
+  initCatalogo();
 });
+
+// ── Tabs ─────────────────────────────────────────────────────────
+function setupTabs() {
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      const tab = btn.dataset.tab;
+      document.getElementById('tab-solicitudes').classList.toggle('hidden', tab !== 'solicitudes');
+      document.getElementById('tab-catalogo').classList.toggle('hidden', tab !== 'catalogo');
+    });
+  });
+}
+
+// ── Catálogo CRUD ────────────────────────────────────────────────
+function initCatalogo() {
+  cargarCatalogoAdmin();
+  document.getElementById('btnAgregarProducto').addEventListener('click', agregarProductoCatalogo);
+}
+
+function cargarCatalogoAdmin() {
+  db.collection('productos')
+    .orderBy('categoria')
+    .onSnapshot(snap => {
+      const productos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderCatalogo(productos);
+    });
+}
+
+function renderCatalogo(productos) {
+  const tbody = document.getElementById('catalogoBody');
+  if (productos.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="loading-row">Sin productos. Agrega el primero.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = productos.map(p => `
+    <tr>
+      <td><strong>${p.nombre}</strong></td>
+      <td>${p.categoria}</td>
+      <td>${p.unidad}</td>
+      <td>
+        <label class="toggle">
+          <input type="checkbox" ${p.activo ? 'checked' : ''} onchange="toggleActivo('${p.id}', this.checked)">
+          <span class="toggle-label">${p.activo ? 'Activo' : 'Inactivo'}</span>
+        </label>
+      </td>
+      <td>
+        <button class="btn btn-sm btn-ghost" style="color:var(--danger)" onclick="eliminarProducto('${p.id}', '${p.nombre}')">🗑 Eliminar</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function agregarProductoCatalogo() {
+  const nombre    = document.getElementById('newNombre').value.trim();
+  const categoria = document.getElementById('newCategoria').value;
+  const unidad    = document.getElementById('newUnidad').value;
+
+  if (!nombre)    return showToast('Escribe el nombre del producto.', 'error');
+  if (!categoria) return showToast('Selecciona una categoría.', 'error');
+  if (!unidad)    return showToast('Selecciona una unidad de medida.', 'error');
+
+  try {
+    await db.collection('productos').add({ nombre, categoria, unidad, activo: true });
+    document.getElementById('newNombre').value = '';
+    document.getElementById('newCategoria').value = '';
+    document.getElementById('newUnidad').value = '';
+    showToast('✓ Producto agregado al catálogo.', 'success');
+  } catch (err) {
+    console.error(err);
+    showToast('Error al agregar el producto.', 'error');
+  }
+}
+
+async function toggleActivo(id, activo) {
+  try {
+    await db.collection('productos').doc(id).update({ activo });
+    showToast(activo ? 'Producto activado.' : 'Producto desactivado.', 'info');
+  } catch (err) {
+    showToast('Error al actualizar.', 'error');
+  }
+}
+
+async function eliminarProducto(id, nombre) {
+  if (!confirm(`¿Eliminar "${nombre}" del catálogo?`)) return;
+  try {
+    await db.collection('productos').doc(id).delete();
+    showToast('Producto eliminado.', 'success');
+  } catch (err) {
+    showToast('Error al eliminar.', 'error');
+  }
+}
 
 // ── Realtime ─────────────────────────────────────────────────────
 function initRealtime() {

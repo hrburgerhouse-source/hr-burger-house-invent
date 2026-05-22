@@ -72,8 +72,37 @@
         </div>
       </div>
 
-      <!-- Productos (generado dinámicamente por app.js) -->
-      <div id="productSections"></div>
+      <!-- Carrito de productos -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">🛒</span>
+          <h2>Productos a Solicitar</h2>
+        </div>
+
+        <div class="add-product-row">
+          <div class="form-group" style="flex:2">
+            <label for="selectProducto">Producto</label>
+            <select id="selectProducto" onchange="onProductoChange(this)">
+              <option value="">Seleccionar producto...</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex:1">
+            <label for="inputCantidad">Cantidad</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="number" id="inputCantidad" min="1" value="1" style="width:80px">
+              <span id="unidadLabel" class="product-unit" style="min-width:40px">—</span>
+            </div>
+          </div>
+          <div class="form-group add-btn-group">
+            <label>&nbsp;</label>
+            <button type="button" class="btn btn-primary" onclick="agregarProducto()">+ Agregar</button>
+          </div>
+        </div>
+
+        <div id="cartList" class="cart-list">
+          <p class="cart-empty">Aún no has agregado productos a la solicitud.</p>
+        </div>
+      </div>
 
       <!-- Notas y correo -->
       <div class="card">
@@ -93,14 +122,6 @@
         </div>
       </div>
 
-      <!-- Resumen de selección -->
-      <div id="summaryCard" class="card summary-card hidden">
-        <div class="card-header">
-          <span class="card-icon">🛒</span>
-          <h2>Resumen de la solicitud</h2>
-        </div>
-        <div id="summaryList"></div>
-      </div>
 
       <div class="form-actions">
         <button type="button" id="clearBtn" class="btn btn-ghost">Limpiar formulario</button>
