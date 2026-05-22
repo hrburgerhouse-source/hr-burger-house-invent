@@ -107,20 +107,27 @@ async function handleSubmit(e) {
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('TIMEOUT: Firebase no respondió en 10 segundos. Verifica las reglas de Firestore.')), 10000)
+  );
+
   try {
-    const docRef = await db.collection('solicitudes').add(solicitud);
+    const docRef = await Promise.race([
+      db.collection('solicitudes').add(solicitud),
+      timeout
+    ]);
     await enviarCorreo(solicitud, docRef.id);
     showOverlay(false);
     showToast('¡Solicitud enviada y correo notificado!', 'success');
     resetForm();
   } catch (err) {
     showOverlay(false);
+    console.error('ERROR DETALLADO:', err);
     if (err.emailError) {
       showToast('Solicitud guardada, pero el correo no pudo enviarse.', 'info');
       resetForm();
     } else {
-      console.error(err);
-      showToast('Error al guardar. Verifica tu conexión y configuración.', 'error');
+      showToast('Error: ' + err.message, 'error');
     }
   }
 }
