@@ -20,6 +20,7 @@
       <nav class="nav">
         <a href="index.html" class="nav-link">Nueva Solicitud</a>
         <a href="admin.html" class="nav-link active">Panel Admin</a>
+        <button class="btn btn-ghost btn-sm" id="btnCambiarPin" style="margin-left:8px;">🔑 PIN</button>
       </nav>
     </div>
   </div>
@@ -121,6 +122,62 @@
 
 <!-- Toast -->
 <div id="toast" class="toast"></div>
+
+<!-- Modal cambiar PIN -->
+<div id="modalPin" class="modal hidden">
+  <div class="modal-backdrop" id="modalPinBackdrop"></div>
+  <div class="modal-content" style="max-width:360px;">
+    <div class="modal-header">
+      <h3>Cambiar PIN</h3>
+      <button class="modal-close" id="modalPinClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group" style="margin-bottom:14px;">
+        <label>PIN actual</label>
+        <input type="password" inputmode="numeric" maxlength="8" id="pinActual" placeholder="••••">
+      </div>
+      <div class="form-group" style="margin-bottom:14px;">
+        <label>Nuevo PIN</label>
+        <input type="password" inputmode="numeric" maxlength="8" id="pinNuevo" placeholder="••••">
+      </div>
+      <div class="form-group">
+        <label>Confirmar nuevo PIN</label>
+        <input type="password" inputmode="numeric" maxlength="8" id="pinConfirm" placeholder="••••">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" id="modalPinCancelar">Cancelar</button>
+      <button class="btn btn-primary btn-sm" id="guardarPin">Guardar PIN</button>
+    </div>
+  </div>
+</div>
+
+<!-- Pantalla de acceso PIN -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <img src="logo.jpeg" alt="HR Burger House" class="login-logo">
+    <h2>Panel de Administración</h2>
+    <p>Ingresa tu PIN para continuar</p>
+    <div class="pin-display" id="pinDisplay">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <div class="pin-pad">
+      <button class="pin-btn" onclick="pinPress('1')">1</button>
+      <button class="pin-btn" onclick="pinPress('2')">2</button>
+      <button class="pin-btn" onclick="pinPress('3')">3</button>
+      <button class="pin-btn" onclick="pinPress('4')">4</button>
+      <button class="pin-btn" onclick="pinPress('5')">5</button>
+      <button class="pin-btn" onclick="pinPress('6')">6</button>
+      <button class="pin-btn" onclick="pinPress('7')">7</button>
+      <button class="pin-btn" onclick="pinPress('8')">8</button>
+      <button class="pin-btn" onclick="pinPress('9')">9</button>
+      <button class="pin-btn pin-clear" onclick="pinClear()">✕</button>
+      <button class="pin-btn" onclick="pinPress('0')">0</button>
+      <button class="pin-btn pin-del" onclick="pinDelete()">⌫</button>
+    </div>
+    <p id="pinError" class="pin-error hidden">PIN incorrecto. Intenta de nuevo.</p>
+  </div>
+</div>
 
 <!-- Firebase Compat -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>

@@ -7,7 +7,9 @@
       "Bash(winget install *)",
       "Bash(gh auth *)",
       "PowerShell(gh auth *)",
-      "PowerShell(Test-Path *)"
+      "PowerShell(Test-Path *)",
+      "PowerShell(gh api *)",
+      "PowerShell(Get-ChildItem *)"
     ]
   }
 }

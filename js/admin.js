@@ -1,9 +1,95 @@
 let allRequests = [];
+const DEFAULT_PIN = '1234';
+let pinInput = '';
+
+// ── PIN Login ────────────────────────────────────────────────────
+function checkLogin() {
+  if (sessionStorage.getItem('adminAuth') === 'true') {
+    document.getElementById('loginScreen').classList.add('hidden');
+    return true;
+  }
+  return false;
+}
+
+function pinPress(digit) {
+  if (pinInput.length >= 8) return;
+  pinInput += digit;
+  updatePinDisplay();
+  if (pinInput.length >= 4) setTimeout(validatePin, 200);
+}
+
+function pinDelete() {
+  pinInput = pinInput.slice(0, -1);
+  updatePinDisplay();
+}
+
+function pinClear() {
+  pinInput = '';
+  updatePinDisplay();
+  document.getElementById('pinError').classList.add('hidden');
+}
+
+function updatePinDisplay() {
+  const dots = document.querySelectorAll('#pinDisplay span');
+  dots.forEach((dot, i) => dot.classList.toggle('filled', i < pinInput.length));
+}
+
+function validatePin() {
+  const stored = localStorage.getItem('adminPin') || DEFAULT_PIN;
+  if (pinInput === stored) {
+    sessionStorage.setItem('adminAuth', 'true');
+    document.getElementById('loginScreen').classList.add('hidden');
+    initRealtime();
+    setupFilters();
+    setupModal();
+    setupPinModal();
+  } else {
+    document.getElementById('pinError').classList.remove('hidden');
+    pinInput = '';
+    updatePinDisplay();
+  }
+}
+
+// ── Cambiar PIN ──────────────────────────────────────────────────
+function setupPinModal() {
+  document.getElementById('btnCambiarPin').addEventListener('click', () => {
+    document.getElementById('pinActual').value = '';
+    document.getElementById('pinNuevo').value = '';
+    document.getElementById('pinConfirm').value = '';
+    document.getElementById('modalPin').classList.remove('hidden');
+  });
+  document.getElementById('modalPinClose').addEventListener('click', cerrarModalPin);
+  document.getElementById('modalPinCancelar').addEventListener('click', cerrarModalPin);
+  document.getElementById('modalPinBackdrop').addEventListener('click', cerrarModalPin);
+  document.getElementById('guardarPin').addEventListener('click', guardarNuevoPin);
+}
+
+function cerrarModalPin() {
+  document.getElementById('modalPin').classList.add('hidden');
+}
+
+function guardarNuevoPin() {
+  const actual  = document.getElementById('pinActual').value;
+  const nuevo   = document.getElementById('pinNuevo').value;
+  const confirm = document.getElementById('pinConfirm').value;
+  const stored  = localStorage.getItem('adminPin') || DEFAULT_PIN;
+
+  if (actual !== stored)   return showToast('El PIN actual es incorrecto.', 'error');
+  if (nuevo.length < 4)    return showToast('El nuevo PIN debe tener al menos 4 dígitos.', 'error');
+  if (nuevo !== confirm)   return showToast('Los PINs no coinciden.', 'error');
+  if (!/^\d+$/.test(nuevo)) return showToast('El PIN solo puede contener números.', 'error');
+
+  localStorage.setItem('adminPin', nuevo);
+  cerrarModalPin();
+  showToast('✓ PIN actualizado correctamente.', 'success');
+}
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (!checkLogin()) return;
   initRealtime();
   setupFilters();
   setupModal();
+  setupPinModal();
 });
 
 // ── Realtime ─────────────────────────────────────────────────────

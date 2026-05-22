@@ -260,6 +260,64 @@ small.text-muted { font-size: 12px; color: var(--text-muted); }
 .hidden { display: none !important; }
 .text-muted { color: var(--text-muted); }
 
+/* ── Login PIN screen ────────────────────────────────────────── */
+.login-screen {
+  position: fixed; inset: 0; z-index: 500;
+  background: #1A1A2E;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.login-screen.hidden { display: none; }
+
+.login-card {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: 36px 32px;
+  width: 100%; max-width: 340px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+
+.login-logo { height: 72px; width: auto; object-fit: contain; margin: 0 auto 20px; border-radius: 12px; }
+.login-card h2 { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+.login-card > p { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
+
+.pin-display {
+  display: flex; justify-content: center; gap: 14px;
+  margin-bottom: 28px;
+}
+.pin-display span {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid var(--border);
+  transition: all .15s;
+}
+.pin-display span.filled { background: var(--primary); border-color: var(--primary); }
+
+.pin-pad {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin-bottom: 16px;
+}
+.pin-btn {
+  height: 60px; font-size: 22px; font-weight: 700;
+  background: var(--surface-2); border: 1.5px solid var(--border);
+  border-radius: var(--radius); color: var(--text);
+  transition: all .1s;
+}
+.pin-btn:hover { background: var(--border); }
+.pin-btn:active { transform: scale(.93); }
+.pin-clear { color: var(--danger); font-size: 18px; }
+.pin-del   { font-size: 18px; }
+
+.pin-error {
+  color: var(--danger); font-size: 13px; font-weight: 600;
+  animation: shake .3s ease;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25%      { transform: translateX(-6px); }
+  75%      { transform: translateX(6px); }
+}
+
 /* ── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 768px) {
   :root { --gap: 16px; }
