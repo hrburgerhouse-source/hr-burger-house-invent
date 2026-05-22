@@ -11,10 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // ── Cargar catálogo desde Firestore ─────────────────────────────
 function cargarCatalogo() {
   db.collection('productos')
-    .where('activo', '==', true)
     .onSnapshot(snap => {
       catalogoProductos = snap.docs
         .map(d => ({ id: d.id, ...d.data() }))
+        .filter(p => p.activo !== false)
         .sort((a, b) => a.categoria.localeCompare(b.categoria));
       renderSelector();
     }, err => {
