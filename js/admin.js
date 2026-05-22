@@ -129,9 +129,10 @@ function initCatalogo() {
 
 function cargarCatalogoAdmin() {
   db.collection('productos')
-    .orderBy('categoria')
     .onSnapshot(snap => {
-      const productos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const productos = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => a.categoria.localeCompare(b.categoria));
       renderCatalogo(productos);
     });
 }

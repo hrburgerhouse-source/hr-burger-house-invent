@@ -12,9 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
 function cargarCatalogo() {
   db.collection('productos')
     .where('activo', '==', true)
-    .orderBy('categoria')
     .onSnapshot(snap => {
-      catalogoProductos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      catalogoProductos = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => a.categoria.localeCompare(b.categoria));
       renderSelector();
     }, err => {
       console.error(err);
