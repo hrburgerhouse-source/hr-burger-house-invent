@@ -33,7 +33,7 @@ const emailjsConfig = {
 // ================================================================
 // PASO 3 — Correo del encargado/administrador (receptor por defecto)
 // ================================================================
-const adminEmail = "encargado@tunegocio.com";
+const adminEmail = "hrburgerhouse@gmail.com";
 
 // --- Inicialización ---
 firebase.initializeApp(firebaseConfig);

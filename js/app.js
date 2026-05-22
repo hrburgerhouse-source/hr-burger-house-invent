@@ -148,7 +148,7 @@ async function handleSubmit(e) {
     prioridad:      document.getElementById('prioridad').value,
     fechaRequerida: document.getElementById('fechaRequerida').value,
     notas:          document.getElementById('notas').value.trim(),
-    correoDestino:  document.getElementById('correoDestino').value.trim(),
+    correoDestino:  adminEmail,
     productos:      cart,
     estado:         'pendiente',
     createdAt:      new Date().toISOString()
@@ -195,7 +195,7 @@ async function enviarCorreo(solicitud, docId) {
 }
 
 function validateForm() {
-  const ids = ['solicitante', 'area', 'prioridad', 'fechaRequerida', 'correoDestino'];
+  const ids = ['solicitante', 'area', 'prioridad', 'fechaRequerida'];
   let ok = true;
   ids.forEach(id => {
     const el = document.getElementById(id);
