@@ -25,9 +25,9 @@ const firebaseConfig = {
 //   3. Account > Public Key
 // ================================================================
 const emailjsConfig = {
-  publicKey:  "PEGA_TU_PUBLIC_KEY",
-  serviceId:  "PEGA_TU_SERVICE_ID",
-  templateId: "PEGA_TU_TEMPLATE_ID"
+  publicKey:  "5vyyYW8nboAdFL7LG",
+  serviceId:  "service_yvnco3q",
+  templateId: "template_9nmy46c"
 };
 
 // ================================================================
