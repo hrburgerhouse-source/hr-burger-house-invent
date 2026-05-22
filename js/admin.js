@@ -54,6 +54,16 @@ function validatePin() {
 
 // ── Cambiar PIN ──────────────────────────────────────────────────
 function setupPinModal() {
+  document.getElementById('btnCerrarSesion').addEventListener('click', () => {
+    if (confirm('¿Cerrar sesión del panel admin?')) {
+      sessionStorage.removeItem(AUTH_KEY);
+      pinInput = '';
+      updatePinDisplay();
+      document.getElementById('pinError').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+    }
+  });
+
   document.getElementById('btnCambiarPin').addEventListener('click', () => {
     document.getElementById('pinActual').value = '';
     document.getElementById('pinNuevo').value = '';
