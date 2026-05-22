@@ -1,10 +1,12 @@
 let allRequests = [];
 const DEFAULT_PIN = '1234';
+const AUTH_KEY = 'adminAuth_v2';
 let pinInput = '';
 
 // ── PIN Login ────────────────────────────────────────────────────
 function checkLogin() {
-  if (sessionStorage.getItem('adminAuth') === 'true') {
+  sessionStorage.removeItem('adminAuth'); // limpiar versión anterior
+  if (sessionStorage.getItem(AUTH_KEY) === 'ok') {
     document.getElementById('loginScreen').classList.add('hidden');
     return true;
   }
@@ -37,7 +39,7 @@ function updatePinDisplay() {
 function validatePin() {
   const stored = localStorage.getItem('adminPin') || DEFAULT_PIN;
   if (pinInput === stored) {
-    sessionStorage.setItem('adminAuth', 'true');
+    sessionStorage.setItem(AUTH_KEY, 'ok');
     document.getElementById('loginScreen').classList.add('hidden');
     initRealtime();
     setupFilters();
