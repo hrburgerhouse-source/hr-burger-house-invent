@@ -108,7 +108,7 @@ async function handleSubmit(e) {
   };
 
   const timeout = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error('TIMEOUT: Firebase no respondió en 10 segundos. Verifica las reglas de Firestore.')), 10000)
+    setTimeout(() => reject(new Error('TIMEOUT: Firebase no respondió en 8 segundos.')), 8000)
   );
 
   try {
@@ -127,7 +127,7 @@ async function handleSubmit(e) {
       showToast('Solicitud guardada, pero el correo no pudo enviarse.', 'info');
       resetForm();
     } else {
-      showToast('Error: ' + err.message, 'error');
+      alert('ERROR: ' + err.message + '\n\nCódigo: ' + (err.code || 'sin código'));
     }
   }
 }
