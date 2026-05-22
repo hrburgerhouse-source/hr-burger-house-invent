@@ -40,7 +40,3 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 emailjs.init(emailjsConfig.publicKey);
 
-// --- Test de conexión (temporal) ---
-db.collection('test').add({ ts: new Date().toISOString() })
-  .then(() => alert('✅ Firebase conectado correctamente'))
-  .catch(err => alert('❌ Error Firebase:\n' + err.code + '\n' + err.message));

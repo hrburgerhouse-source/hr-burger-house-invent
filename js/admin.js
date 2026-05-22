@@ -138,6 +138,7 @@ function formatTs(ts) {
   return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
+
 function formatDate(str) {
   if (!str) return '—';
   const [y, m, d] = str.split('-');

@@ -104,18 +104,11 @@ async function handleSubmit(e) {
     correoDestino:  document.getElementById('correoDestino').value.trim(),
     productos,
     estado:    'pendiente',
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    createdAt: new Date().toISOString()
   };
 
-  const timeout = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error('TIMEOUT: Firebase no respondió en 8 segundos.')), 8000)
-  );
-
   try {
-    const docRef = await Promise.race([
-      db.collection('solicitudes').add(solicitud),
-      timeout
-    ]);
+    const docRef = await db.collection('solicitudes').add(solicitud);
     await enviarCorreo(solicitud, docRef.id);
     showOverlay(false);
     showToast('¡Solicitud enviada y correo notificado!', 'success');
@@ -127,7 +120,7 @@ async function handleSubmit(e) {
       showToast('Solicitud guardada, pero el correo no pudo enviarse.', 'info');
       resetForm();
     } else {
-      alert('ERROR: ' + err.message + '\n\nCódigo: ' + (err.code || 'sin código'));
+      showToast('Error: ' + err.message, 'error');
     }
   }
 }
