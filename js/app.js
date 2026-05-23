@@ -31,16 +31,20 @@ async function buscarSolicitudes() {
   lista.innerHTML = '<p class="cart-empty">Buscando...</p>';
 
   try {
-    const snap = await db.collection('solicitudes')
-      .get();
+    const snap = await db.collection('solicitudes').get();
+    const todos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-    const resultados = snap.docs
-      .map(d => ({ id: d.id, ...d.data() }))
-      .filter(s => s.solicitante?.toLowerCase().includes(nombre.toLowerCase()))
+    const resultados = todos
+      .filter(s => (s.solicitante || '').toLowerCase().includes(nombre.toLowerCase()))
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
+    if (todos.length === 0) {
+      lista.innerHTML = '<p class="cart-empty">Aún no hay solicitudes registradas.</p>';
+      return;
+    }
+
     if (resultados.length === 0) {
-      lista.innerHTML = '<p class="cart-empty">No se encontraron solicitudes con ese nombre.</p>';
+      lista.innerHTML = `<p class="cart-empty">No se encontraron solicitudes para "<strong>${nombre}</strong>".<br>Verifica que el nombre coincida exactamente con el que usaste al enviar.</p>`;
       return;
     }
 
@@ -71,8 +75,8 @@ async function buscarSolicitudes() {
     `).join('');
 
   } catch (err) {
-    console.error(err);
-    lista.innerHTML = '<p class="cart-empty">Error al cargar solicitudes.</p>';
+    console.error('Error Firestore:', err);
+    lista.innerHTML = `<p class="cart-empty">Error: ${err.message}</p>`;
   }
 }
 
