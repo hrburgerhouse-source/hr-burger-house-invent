@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('requestForm').addEventListener('submit', handleSubmit);
   document.getElementById('clearBtn').addEventListener('click', handleClear);
   setupTabsEmpleado();
+  // Pre-llenar nombre si ya lo usó antes
+  const nombreGuardado = localStorage.getItem('empleadoNombre');
+  if (nombreGuardado) document.getElementById('solicitante').value = nombreGuardado;
 });
 
 // ── Tabs empleado ────────────────────────────────────────────────
@@ -18,14 +21,26 @@ function setupTabsEmpleado() {
       const tab = btn.dataset.tab;
       document.getElementById('tab-nueva').classList.toggle('hidden', tab !== 'nueva');
       document.getElementById('tab-mis').classList.toggle('hidden', tab !== 'mis');
+      if (tab === 'mis') cargarMisSolicitudes();
     });
   });
 }
 
 // ── Mis Solicitudes ──────────────────────────────────────────────
+async function cargarMisSolicitudes() {
+  const nombreGuardado = localStorage.getItem('empleadoNombre') || '';
+  const input = document.getElementById('buscarNombre');
+  if (nombreGuardado && !input.value) input.value = nombreGuardado;
+  buscarSolicitudes();
+}
+
 async function buscarSolicitudes() {
   const nombre = document.getElementById('buscarNombre').value.trim();
-  if (!nombre) { showToast('Escribe tu nombre para buscar.', 'error'); return; }
+  if (!nombre) {
+    document.getElementById('misSolicitudesLista').innerHTML =
+      '<p class="cart-empty">Escribe tu nombre para ver tus solicitudes.</p>';
+    return;
+  }
 
   const lista = document.getElementById('misSolicitudesLista');
   lista.innerHTML = '<p class="cart-empty">Buscando...</p>';
@@ -257,6 +272,7 @@ async function handleSubmit(e) {
   try {
     const docRef = await db.collection('solicitudes').add(solicitud);
     await enviarCorreo(solicitud, docRef.id);
+    localStorage.setItem('empleadoNombre', solicitud.solicitante);
     showOverlay(false);
     showToast('¡Solicitud enviada y correo notificado!', 'success');
     resetForm();
