@@ -15,16 +15,6 @@
 
   --text:       #1C1B18;
   --text-muted: #6B6963;
-}
-
-[data-theme="dark"] {
-  --bg:        #0F0F1A;
-  --surface:   #1A1A2E;
-  --surface-2: #252540;
-  --border:    #2E2E50;
-
-  --text:       #E8E7F0;
-  --text-muted: #8885A8;
 
   --radius-sm: 6px;
   --radius:    12px;
@@ -38,6 +28,15 @@
   --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --container: 1000px;
   --gap: 20px;
+}
+
+[data-theme="dark"] {
+  --bg:        #0F0F1A;
+  --surface:   #1A1A2E;
+  --surface-2: #252540;
+  --border:    #2E2E50;
+  --text:       #E8E7F0;
+  --text-muted: #8885A8;
 }
 
 /* ── Reset ──────────────────────────────────────────────────── */
