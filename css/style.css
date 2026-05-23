@@ -281,28 +281,44 @@ small.text-muted { font-size: 12px; color: var(--text-muted); }
 .btn-theme:hover { background: var(--border); }
 
 /* Dark mode overrides */
-[data-theme="dark"] header { background: var(--surface); border-color: var(--border); }
-[data-theme="dark"] .card  { background: var(--surface); border-color: var(--border); }
-[data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea { background: var(--surface-2); color: var(--text); border-color: var(--border); }
-[data-theme="dark"] input:focus, [data-theme="dark"] select:focus, [data-theme="dark"] textarea:focus { background: var(--surface); }
-[data-theme="dark"] .btn-ghost { background: var(--surface-2); color: var(--text-muted); border-color: var(--border); }
+[data-theme="dark"] {
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.4);
+  --shadow:    0 4px 12px rgba(0,0,0,.4);
+  --shadow-lg: 0 8px 28px rgba(0,0,0,.5);
+}
+[data-theme="dark"] header       { background: var(--surface); border-color: var(--border); box-shadow: 0 1px 0 var(--border); }
+[data-theme="dark"] .card        { background: var(--surface); border-color: var(--border); box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+[data-theme="dark"] .stat-card   { background: var(--surface); border-color: var(--border); box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+[data-theme="dark"] .solicitud-card { background: var(--surface); border-color: var(--border); }
+[data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea { background: var(--bg); color: var(--text); border-color: var(--border); }
+[data-theme="dark"] input:focus, [data-theme="dark"] select:focus, [data-theme="dark"] textarea:focus { background: var(--surface-2); border-color: var(--primary); }
+[data-theme="dark"] .btn-ghost   { background: var(--surface-2); color: var(--text-muted); border-color: var(--border); }
 [data-theme="dark"] .btn-ghost:hover { background: var(--border); color: var(--text); }
+[data-theme="dark"] .btn-theme   { background: var(--surface-2); border-color: var(--border); }
 [data-theme="dark"] .product-item { background: var(--surface-2); border-color: var(--border); }
-[data-theme="dark"] .product-item.active { background: rgba(255,107,53,.1); }
-[data-theme="dark"] .stat-card { background: var(--surface); border-color: var(--border); }
+[data-theme="dark"] .product-item.active { background: rgba(255,107,53,.12); border-color: var(--primary); }
 [data-theme="dark"] tbody tr:hover { background: var(--surface-2); }
 [data-theme="dark"] td, [data-theme="dark"] th { border-color: var(--border); }
-[data-theme="dark"] .modal-content { background: var(--surface); }
-[data-theme="dark"] .modal-body, [data-theme="dark"] .modal-header, [data-theme="dark"] .modal-footer { border-color: var(--border); }
+[data-theme="dark"] thead tr      { border-color: var(--border); }
+[data-theme="dark"] .modal-content { background: var(--surface); box-shadow: 0 16px 48px rgba(0,0,0,.6); }
+[data-theme="dark"] .modal-header, [data-theme="dark"] .modal-footer { border-color: var(--border); }
+[data-theme="dark"] .modal-section-title { border-color: var(--border); }
+[data-theme="dark"] .detail-row  { border-color: var(--border); }
+[data-theme="dark"] .product-list li { border-color: var(--border); }
 [data-theme="dark"] .overlay-content { background: var(--surface); }
-[data-theme="dark"] .solicitud-card { background: var(--surface); border-color: var(--border); }
-[data-theme="dark"] .login-card { background: var(--surface); }
-[data-theme="dark"] .pin-btn { background: var(--surface-2); border-color: var(--border); color: var(--text); }
+[data-theme="dark"] .spinner      { border-color: var(--border); border-top-color: var(--primary); }
+[data-theme="dark"] .login-card   { background: var(--surface); box-shadow: 0 8px 32px rgba(0,0,0,.5); }
+[data-theme="dark"] .pin-btn      { background: var(--surface-2); border-color: var(--border); color: var(--text); }
 [data-theme="dark"] .pin-btn:hover { background: var(--border); }
+[data-theme="dark"] .pin-display span { border-color: var(--border); }
 [data-theme="dark"] .cart-table th, [data-theme="dark"] .cart-table td { border-color: var(--border); }
-[data-theme="dark"] .tab { background: var(--surface); border-color: var(--border); color: var(--text-muted); }
-[data-theme="dark"] .tab.active { background: rgba(255,107,53,.12); }
-[data-theme="dark"] .notes { background: #2A2510; border-color: #5C4A10; }
+[data-theme="dark"] .tab          { background: var(--surface); border-color: var(--border); }
+[data-theme="dark"] .tab.active   { background: rgba(255,107,53,.12); border-color: var(--primary); }
+[data-theme="dark"] .tab:hover    { background: var(--surface-2); }
+[data-theme="dark"] .card-header  { border-color: var(--border); }
+[data-theme="dark"] .summary-tag  { background: rgba(255,107,53,.15); color: #FF9F75; }
+[data-theme="dark"] .filters      { background: transparent; }
+[data-theme="dark"] .notes        { background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.25); color: #D4A04A; }
 
 /* ── Tabs ────────────────────────────────────────────────────── */
 .tabs { display: flex; gap: 8px; margin-bottom: var(--gap); }
