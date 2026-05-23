@@ -6,7 +6,103 @@ document.addEventListener('DOMContentLoaded', () => {
   setMinDate();
   document.getElementById('requestForm').addEventListener('submit', handleSubmit);
   document.getElementById('clearBtn').addEventListener('click', handleClear);
+  setupTabsEmpleado();
 });
+
+// ── Tabs empleado ────────────────────────────────────────────────
+function setupTabsEmpleado() {
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      const tab = btn.dataset.tab;
+      document.getElementById('tab-nueva').classList.toggle('hidden', tab !== 'nueva');
+      document.getElementById('tab-mis').classList.toggle('hidden', tab !== 'mis');
+    });
+  });
+}
+
+// ── Mis Solicitudes ──────────────────────────────────────────────
+async function buscarSolicitudes() {
+  const nombre = document.getElementById('buscarNombre').value.trim();
+  if (!nombre) { showToast('Escribe tu nombre para buscar.', 'error'); return; }
+
+  const lista = document.getElementById('misSolicitudesLista');
+  lista.innerHTML = '<p class="cart-empty">Buscando...</p>';
+
+  try {
+    const snap = await db.collection('solicitudes')
+      .get();
+
+    const resultados = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .filter(s => s.solicitante?.toLowerCase().includes(nombre.toLowerCase()))
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    if (resultados.length === 0) {
+      lista.innerHTML = '<p class="cart-empty">No se encontraron solicitudes con ese nombre.</p>';
+      return;
+    }
+
+    lista.innerHTML = resultados.map(s => `
+      <div class="solicitud-card">
+        <div class="solicitud-header">
+          <div>
+            <span class="solicitud-id">#${s.id.slice(0,8).toUpperCase()}</span>
+            <span class="solicitud-fecha">${formatTsEmpleado(s.createdAt)}</span>
+          </div>
+          ${badgeEstado(s.estado)}
+        </div>
+        <div class="solicitud-body">
+          <div class="solicitud-info">
+            <span>👤 ${s.solicitante}</span>
+            <span>🏪 ${s.area}</span>
+            <span>${badgePrioridad(s.prioridad)}</span>
+            <span>📅 Requerido: ${formatFecha(s.fechaRequerida)}</span>
+          </div>
+          <div class="solicitud-productos">
+            ${(s.productos || []).map(p => `
+              <span class="summary-tag">${p.nombre}: <strong>${p.cantidad} ${p.unidad}</strong></span>
+            `).join('')}
+          </div>
+          ${s.notas ? `<p class="solicitud-notas">📝 ${s.notas}</p>` : ''}
+        </div>
+      </div>
+    `).join('');
+
+  } catch (err) {
+    console.error(err);
+    lista.innerHTML = '<p class="cart-empty">Error al cargar solicitudes.</p>';
+  }
+}
+
+function badgeEstado(estado) {
+  const map = {
+    pendiente:  ['badge-pending',  '⏳ Pendiente'],
+    aprobado:   ['badge-approved', '✓ Aprobado'],
+    rechazado:  ['badge-rejected', '✗ Rechazado']
+  };
+  const [cls, label] = map[estado] || ['badge-pending', estado];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function badgePrioridad(p) {
+  const map = { urgente: ['badge-urgent','🔴 Urgente'], normal: ['badge-normal','Normal'], programado: ['badge-scheduled','🗓️ Programado'] };
+  const [cls, label] = map[p] || ['badge-normal', p];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function formatTsEmpleado(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts);
+  return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function formatFecha(str) {
+  if (!str) return '—';
+  const [y, m, d] = str.split('-');
+  return `${d}/${m}/${y}`;
+}
 
 // ── Cargar catálogo desde Firestore ─────────────────────────────
 function cargarCatalogo() {

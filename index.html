@@ -28,9 +28,18 @@
   <div class="container">
 
     <div class="page-hero">
-      <h1>Nueva Solicitud de Productos</h1>
-      <p>Completa el formulario para solicitar productos al almacén. Se enviará una notificación por correo.</p>
+      <h1>HR Burger House</h1>
+      <p>Sistema de solicitud de productos al almacén.</p>
     </div>
+
+    <!-- Tabs empleado -->
+    <div class="tabs">
+      <button class="tab active" data-tab="nueva">📋 Nueva Solicitud</button>
+      <button class="tab" data-tab="mis">🔍 Mis Solicitudes</button>
+    </div>
+
+    <!-- ── TAB NUEVA SOLICITUD ── -->
+    <div id="tab-nueva">
 
     <form id="requestForm" novalidate>
 
@@ -124,6 +133,31 @@
       </div>
 
     </form>
+    </div> <!-- /tab-nueva -->
+
+    <!-- ── TAB MIS SOLICITUDES ── -->
+    <div id="tab-mis" class="hidden">
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">🔍</span>
+          <h2>Buscar mis solicitudes</h2>
+        </div>
+        <div class="form-grid cols-2">
+          <div class="form-group">
+            <label for="buscarNombre">Tu nombre</label>
+            <input type="text" id="buscarNombre" placeholder="Escribe tu nombre...">
+          </div>
+          <div class="form-group" style="align-self:flex-end">
+            <button type="button" class="btn btn-primary" onclick="buscarSolicitudes()">Buscar</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="misSolicitudesLista"></div>
+
+    </div> <!-- /tab-mis -->
+
   </div>
 </main>
 

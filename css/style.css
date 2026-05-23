@@ -287,6 +287,23 @@ small.text-muted { font-size: 12px; color: var(--text-muted); }
 .btn-remove { background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: all .15s; }
 .btn-remove:hover { color: var(--danger); background: rgba(239,68,68,.1); }
 
+/* ── Solicitud cards (empleado) ──────────────────────────────── */
+.solicitud-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 18px 20px;
+  margin-bottom: 12px; box-shadow: var(--shadow-sm);
+}
+.solicitud-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px;
+}
+.solicitud-id { font-size: 13px; font-weight: 700; color: var(--primary); margin-right: 10px; }
+.solicitud-fecha { font-size: 12px; color: var(--text-muted); }
+.solicitud-body { display: flex; flex-direction: column; gap: 10px; }
+.solicitud-info { display: flex; flex-wrap: wrap; gap: 10px; font-size: 13px; color: var(--text-muted); align-items: center; }
+.solicitud-productos { display: flex; flex-wrap: wrap; gap: 6px; }
+.solicitud-notas { font-size: 13px; color: var(--text-muted); font-style: italic; margin: 0; }
+
 /* ── Toggle switch ───────────────────────────────────────────── */
 .toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
 .toggle input { width: 36px; height: 20px; appearance: none; background: var(--border); border-radius: 99px; cursor: pointer; transition: background .2s; position: relative; }
