@@ -101,7 +101,10 @@ async function buscarSolicitudes() {
 
   } catch (err) {
     console.error('Error Firestore:', err);
-    lista.innerHTML = `<p class="cart-empty">Error: ${err.message}</p>`;
+    const msg = err.code === 'permission-denied'
+      ? 'Sin permisos para leer solicitudes. Pide al administrador que actualice las reglas de Firestore.'
+      : `Error al conectar: ${err.message}`;
+    lista.innerHTML = `<p class="cart-empty">${msg}</p>`;
   }
 }
 

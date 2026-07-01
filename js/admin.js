@@ -256,8 +256,11 @@ function initRealtime() {
       applyFilters();
       updateStats(allRequests);
     }, err => {
-      console.error(err);
-      tbody.innerHTML = '<tr><td colspan="7" class="loading-row">Error al conectar. Verifica la configuración de Firebase.</td></tr>';
+      console.error('Firestore solicitudes error:', err);
+      const msg = err.code === 'permission-denied'
+        ? '⚠️ Sin permisos para leer solicitudes. En Firebase Console → Firestore → Rules, asegúrate de que la regla cubra TODAS las colecciones (usa <code>match /{document=**}</code>).'
+        : `Error al conectar: ${err.message}`;
+      tbody.innerHTML = `<tr><td colspan="7" class="loading-row" style="color:var(--danger)">${msg}</td></tr>`;
     });
 }
 
