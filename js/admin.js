@@ -125,6 +125,7 @@ function setupTabs() {
 function initCatalogo() {
   cargarCatalogoAdmin();
   document.getElementById('btnAgregarProducto').addEventListener('click', agregarProductoCatalogo);
+  document.getElementById('btnImportarProductos').addEventListener('click', importarProductosPredeterminados);
 }
 
 function cargarCatalogoAdmin() {
@@ -134,6 +135,14 @@ function cargarCatalogoAdmin() {
         .map(d => ({ id: d.id, ...d.data() }))
         .sort((a, b) => a.categoria.localeCompare(b.categoria));
       renderCatalogo(productos);
+    }, err => {
+      console.error('Firestore error:', err);
+      const tbody = document.getElementById('catalogoBody');
+      const msg = err.code === 'permission-denied'
+        ? 'Sin permiso de acceso. Actualiza las reglas de Firestore en la consola de Firebase.'
+        : `Error al cargar: ${err.message}`;
+      tbody.innerHTML = `<tr><td colspan="5" class="loading-row" style="color:var(--danger)">${msg}</td></tr>`;
+      showToast('Error de permisos en Firebase. Revisa la consola.', 'error');
     });
 }
 
@@ -179,6 +188,40 @@ async function agregarProductoCatalogo() {
   } catch (err) {
     console.error(err);
     showToast('Error al agregar el producto.', 'error');
+  }
+}
+
+async function importarProductosPredeterminados() {
+  if (!confirm('¿Importar los 26 productos predeterminados? No se eliminarán los que ya existen.')) return;
+
+  const btn = document.getElementById('btnImportarProductos');
+  btn.disabled = true;
+  btn.textContent = 'Importando...';
+
+  let count = 0;
+  try {
+    for (const categoria of PRODUCTS) {
+      for (const item of categoria.items) {
+        await db.collection('productos').add({
+          nombre:    item.name,
+          categoria: categoria.name,
+          unidad:    item.unit,
+          activo:    true
+        });
+        count++;
+      }
+    }
+    showToast(`✓ ${count} productos importados al catálogo.`, 'success');
+  } catch (err) {
+    console.error(err);
+    if (err.code === 'permission-denied') {
+      showToast('Error de permisos. Actualiza las reglas de Firestore en Firebase Console.', 'error');
+    } else {
+      showToast('Error al importar productos: ' + err.message, 'error');
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⬇ Importar predeterminados';
   }
 }
 
