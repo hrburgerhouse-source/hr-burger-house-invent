@@ -29,9 +29,18 @@ function setupTabsEmpleado() {
 // ── Mis Solicitudes ──────────────────────────────────────────────
 async function cargarMisSolicitudes() {
   const nombreGuardado = localStorage.getItem('empleadoNombre') || '';
+  const wrap = document.getElementById('buscarNombreWrap');
   const input = document.getElementById('buscarNombre');
-  if (nombreGuardado && !input.value) input.value = nombreGuardado;
-  buscarSolicitudes();
+
+  if (nombreGuardado) {
+    input.value = nombreGuardado;
+    wrap.style.display = 'none';
+    buscarSolicitudes();
+  } else {
+    wrap.style.display = '';
+    input.value = '';
+    document.getElementById('misSolicitudesLista').innerHTML = '';
+  }
 }
 
 async function buscarSolicitudes() {
@@ -41,6 +50,7 @@ async function buscarSolicitudes() {
       '<p class="cart-empty">Escribe tu nombre para ver tus solicitudes.</p>';
     return;
   }
+  localStorage.setItem('empleadoNombre', nombre);
 
   const lista = document.getElementById('misSolicitudesLista');
   lista.innerHTML = '<p class="cart-empty">Buscando...</p>';

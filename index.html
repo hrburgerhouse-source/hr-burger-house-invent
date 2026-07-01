@@ -146,8 +146,15 @@
     <!-- ── TAB MIS SOLICITUDES ── -->
     <div id="tab-mis" class="hidden">
 
-      <input type="hidden" id="buscarNombre">
-
+      <div id="buscarNombreWrap" class="card" style="padding:16px 24px; margin-bottom:var(--gap); display:none;">
+        <div class="form-group" style="margin:0; display:flex; gap:12px; align-items:flex-end;">
+          <div style="flex:1">
+            <label for="buscarNombre">Tu nombre para buscar tus solicitudes</label>
+            <input type="text" id="buscarNombre" placeholder="Escribe tu nombre completo...">
+          </div>
+          <button type="button" class="btn btn-primary" onclick="buscarSolicitudes()">Buscar</button>
+        </div>
+      </div>
       <div id="misSolicitudesLista"></div>
 
     </div> <!-- /tab-mis -->
