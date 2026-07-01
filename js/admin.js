@@ -341,7 +341,7 @@ function openDetail(id) {
     <div class="modal-section-title">Productos solicitados</div>
     <ul class="product-list">
       ${(req.productos || []).map(p => `
-        <li><span>${p.name}</span><span class="product-qty">${p.cantidad} ${p.unit}</span></li>
+        <li><span>${p.nombre}</span><span class="product-qty">${p.cantidad} ${p.unidad}</span></li>
       `).join('')}
     </ul>
   `;
