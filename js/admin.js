@@ -322,9 +322,15 @@ function setupModal() {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 }
 
+function cleanVal(v) {
+  return (v && v !== 'undefined' && v !== 'null') ? v : null;
+}
+
 function openDetail(id) {
   const req = allRequests.find(r => r.id === id);
   if (!req) return;
+
+  console.log('openDetail productos:', JSON.stringify(req.productos));
 
   document.getElementById('modalTitle').textContent = `Solicitud #${req.id.slice(0, 8).toUpperCase()}`;
 
@@ -341,7 +347,10 @@ function openDetail(id) {
     <div class="modal-section-title">Productos solicitados</div>
     <ul class="product-list">
       ${(req.productos || []).map(p => `
-        <li><span>${p.nombre || p.name || '—'}</span><span class="product-qty">${p.cantidad} ${p.unidad || p.unit || ''}</span></li>
+        <li>
+          <span>${cleanVal(p.nombre) || cleanVal(p.name) || '—'}</span>
+          <span class="product-qty">${cleanVal(String(p.cantidad)) || '?'} ${cleanVal(p.unidad) || cleanVal(p.unit) || ''}</span>
+        </li>
       `).join('')}
     </ul>
   `;

@@ -178,10 +178,12 @@ function renderSelector() {
     items.forEach(p => {
       const op = document.createElement('option');
       op.value = p.id;
-      op.textContent = p.nombre;
-      op.dataset.unidad = p.unidad;
-      op.dataset.nombre = p.nombre;
-      op.dataset.categoria = p.categoria;
+      const nombre = p.nombre || p.name || '';
+      const unidad = p.unidad || p.unit || '';
+      op.textContent = nombre;
+      op.dataset.nombre = nombre;
+      op.dataset.unidad = unidad;
+      op.dataset.categoria = p.categoria || '';
       og.appendChild(op);
     });
     sel.appendChild(og);
