@@ -5,7 +5,7 @@ let pinInput = '';
 
 // ── PIN Login ────────────────────────────────────────────────────
 function checkLogin() {
-  sessionStorage.removeItem('adminAuth'); // limpiar versión anterior
+  sessionStorage.removeItem('adminAuth');
   if (sessionStorage.getItem(AUTH_KEY) === 'ok') {
     document.getElementById('loginScreen').classList.add('hidden');
     return true;
@@ -88,14 +88,14 @@ function guardarNuevoPin() {
   const confirm = document.getElementById('pinConfirm').value;
   const stored  = localStorage.getItem('adminPin') || DEFAULT_PIN;
 
-  if (actual !== stored)   return showToast('El PIN actual es incorrecto.', 'error');
-  if (nuevo.length < 4)    return showToast('El nuevo PIN debe tener al menos 4 dígitos.', 'error');
-  if (nuevo !== confirm)   return showToast('Los PINs no coinciden.', 'error');
-  if (!/^\d+$/.test(nuevo)) return showToast('El PIN solo puede contener números.', 'error');
+  if (actual !== stored)    return showToast('El PIN actual es incorrecto.', 'error');
+  if (nuevo.length < 4)     return showToast('El nuevo PIN debe tener al menos 4 digitos.', 'error');
+  if (nuevo !== confirm)    return showToast('Los PINs no coinciden.', 'error');
+  if (!/^\d+$/.test(nuevo)) return showToast('El PIN solo puede contener numeros.', 'error');
 
   localStorage.setItem('adminPin', nuevo);
   cerrarModalPin();
-  showToast('✓ PIN actualizado correctamente.', 'success');
+  showToast('PIN actualizado correctamente.', 'success');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -121,7 +121,7 @@ function setupTabs() {
   });
 }
 
-// ── Catálogo CRUD ────────────────────────────────────────────────
+// ── Catalogo CRUD ────────────────────────────────────────────────
 function initCatalogo() {
   cargarCatalogoAdmin();
   document.getElementById('btnAgregarProducto').addEventListener('click', agregarProductoCatalogo);
@@ -139,10 +139,9 @@ function cargarCatalogoAdmin() {
       console.error('Firestore error:', err);
       const tbody = document.getElementById('catalogoBody');
       const msg = err.code === 'permission-denied'
-        ? 'Sin permiso de acceso. Actualiza las reglas de Firestore en la consola de Firebase.'
-        : `Error al cargar: ${err.message}`;
-      tbody.innerHTML = `<tr><td colspan="5" class="loading-row" style="color:var(--danger)">${msg}</td></tr>`;
-      showToast('Error de permisos en Firebase. Revisa la consola.', 'error');
+        ? 'Sin permiso. Actualiza las reglas de Firestore en Firebase Console.'
+        : 'Error al cargar: ' + err.message;
+      tbody.innerHTML = '<tr><td colspan="5" class="loading-row" style="color:var(--danger)">' + msg + '</td></tr>';
     });
 }
 
@@ -154,9 +153,9 @@ function renderCatalogo(productos) {
   }
   tbody.innerHTML = productos.map(p => `
     <tr>
-      <td><strong>${p.nombre}</strong></td>
-      <td>${p.categoria}</td>
-      <td>${p.unidad}</td>
+      <td><strong>${p.nombre || p.name || ''}</strong></td>
+      <td>${p.categoria || ''}</td>
+      <td>${p.unidad || p.unit || ''}</td>
       <td>
         <label class="toggle">
           <input type="checkbox" ${p.activo ? 'checked' : ''} onchange="toggleActivo('${p.id}', this.checked)">
@@ -164,7 +163,7 @@ function renderCatalogo(productos) {
         </label>
       </td>
       <td>
-        <button class="btn btn-sm btn-ghost" style="color:var(--danger)" onclick="eliminarProducto('${p.id}', '${p.nombre}')">🗑 Eliminar</button>
+        <button class="btn btn-sm btn-ghost" style="color:var(--danger)" onclick="eliminarProducto('${p.id}', '${p.nombre || p.name || ''}')">Eliminar</button>
       </td>
     </tr>
   `).join('');
@@ -176,7 +175,7 @@ async function agregarProductoCatalogo() {
   const unidad    = document.getElementById('newUnidad').value;
 
   if (!nombre)    return showToast('Escribe el nombre del producto.', 'error');
-  if (!categoria) return showToast('Selecciona una categoría.', 'error');
+  if (!categoria) return showToast('Selecciona una categoria.', 'error');
   if (!unidad)    return showToast('Selecciona una unidad de medida.', 'error');
 
   try {
@@ -184,7 +183,7 @@ async function agregarProductoCatalogo() {
     document.getElementById('newNombre').value = '';
     document.getElementById('newCategoria').value = '';
     document.getElementById('newUnidad').value = '';
-    showToast('✓ Producto agregado al catálogo.', 'success');
+    showToast('Producto agregado al catalogo.', 'success');
   } catch (err) {
     console.error(err);
     showToast('Error al agregar el producto.', 'error');
@@ -192,7 +191,7 @@ async function agregarProductoCatalogo() {
 }
 
 async function importarProductosPredeterminados() {
-  if (!confirm('¿Importar los 26 productos predeterminados? No se eliminarán los que ya existen.')) return;
+  if (!confirm('Importar los 26 productos predeterminados? No se eliminaran los que ya existen.')) return;
 
   const btn = document.getElementById('btnImportarProductos');
   btn.disabled = true;
@@ -211,17 +210,16 @@ async function importarProductosPredeterminados() {
         count++;
       }
     }
-    showToast(`✓ ${count} productos importados al catálogo.`, 'success');
+    showToast(count + ' productos importados al catalogo.', 'success');
   } catch (err) {
     console.error(err);
-    if (err.code === 'permission-denied') {
-      showToast('Error de permisos. Actualiza las reglas de Firestore en Firebase Console.', 'error');
-    } else {
-      showToast('Error al importar productos: ' + err.message, 'error');
-    }
+    const msg = err.code === 'permission-denied'
+      ? 'Error de permisos. Actualiza las reglas de Firestore.'
+      : 'Error al importar: ' + err.message;
+    showToast(msg, 'error');
   } finally {
     btn.disabled = false;
-    btn.textContent = '⬇ Importar predeterminados';
+    btn.textContent = 'Importar predeterminados';
   }
 }
 
@@ -235,7 +233,7 @@ async function toggleActivo(id, activo) {
 }
 
 async function eliminarProducto(id, nombre) {
-  if (!confirm(`¿Eliminar "${nombre}" del catálogo?`)) return;
+  if (!confirm('Eliminar "' + nombre + '" del catalogo?')) return;
   try {
     await db.collection('productos').doc(id).delete();
     showToast('Producto eliminado.', 'success');
@@ -258,9 +256,9 @@ function initRealtime() {
     }, err => {
       console.error('Firestore solicitudes error:', err);
       const msg = err.code === 'permission-denied'
-        ? '⚠️ Sin permisos para leer solicitudes. En Firebase Console → Firestore → Rules, asegúrate de que la regla cubra TODAS las colecciones (usa <code>match /{document=**}</code>).'
-        : `Error al conectar: ${err.message}`;
-      tbody.innerHTML = `<tr><td colspan="7" class="loading-row" style="color:var(--danger)">${msg}</td></tr>`;
+        ? 'Sin permisos. En Firebase Console, asegurate de que la regla cubra todas las colecciones.'
+        : 'Error al conectar: ' + err.message;
+      tbody.innerHTML = '<tr><td colspan="7" class="loading-row" style="color:var(--danger)">' + msg + '</td></tr>';
     });
 }
 
@@ -306,7 +304,7 @@ function applyFilters() {
     if (status   && req.estado    !== status)   return false;
     if (priority && req.prioridad !== priority) return false;
     if (search) {
-      const hay = `${req.solicitante} ${req.area} ${req.notas || ''}`.toLowerCase();
+      const hay = ((req.solicitante || '') + ' ' + (req.area || '') + ' ' + (req.notas || '')).toLowerCase();
       if (!hay.includes(search)) return false;
     }
     return true;
@@ -322,7 +320,7 @@ function setupModal() {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 }
 
-function cleanVal(v) {
+function pVal(v) {
   return (v && v !== 'undefined' && v !== 'null') ? v : null;
 }
 
@@ -330,41 +328,38 @@ function openDetail(id) {
   const req = allRequests.find(r => r.id === id);
   if (!req) return;
 
-  console.log('openDetail productos:', JSON.stringify(req.productos));
+  document.getElementById('modalTitle').textContent = 'Solicitud #' + req.id.slice(0, 8).toUpperCase();
 
-  document.getElementById('modalTitle').textContent = `Solicitud #${req.id.slice(0, 8).toUpperCase()}`;
+  const productos = req.productos || [];
+  const productosHtml = productos.length === 0
+    ? '<li style="color:var(--text-muted)">Sin productos registrados</li>'
+    : productos.map(p => {
+        const nombre   = pVal(p.nombre) || pVal(p.name)  || '(sin nombre)';
+        const cantidad = p.cantidad != null ? p.cantidad : '?';
+        const unidad   = pVal(p.unidad) || pVal(p.unit)  || '';
+        return '<li><span>' + nombre + '</span><span class="product-qty">' + cantidad + ' ' + unidad + '</span></li>';
+      }).join('');
 
-  document.getElementById('modalBody').innerHTML = `
-    <div class="detail-grid">
-      <div class="detail-row"><span class="detail-label">Solicitante</span><span class="detail-value"><strong>${req.solicitante}</strong></span></div>
-      <div class="detail-row"><span class="detail-label">Área</span><span class="detail-value">${req.area}</span></div>
-      <div class="detail-row"><span class="detail-label">Prioridad</span><span class="detail-value">${badgePriority(req.prioridad)}</span></div>
-      <div class="detail-row"><span class="detail-label">Fecha requerida</span><span class="detail-value">${formatDate(req.fechaRequerida)}</span></div>
-      <div class="detail-row"><span class="detail-label">Estado</span><span class="detail-value">${badgeStatus(req.estado)}</span></div>
-      <div class="detail-row"><span class="detail-label">Enviada el</span><span class="detail-value">${formatTs(req.createdAt)}</span></div>
-      ${req.notas ? `<div class="detail-row full"><span class="detail-label">Notas</span><span class="detail-value">${req.notas}</span></div>` : ''}
-    </div>
-    <div class="modal-section-title">Productos solicitados</div>
-    <ul class="product-list">
-      ${(req.productos || []).map(p => `
-        <li>
-          <span>${cleanVal(p.nombre) || cleanVal(p.name) || '—'}</span>
-          <span class="product-qty">${cleanVal(String(p.cantidad)) || '?'} ${cleanVal(p.unidad) || cleanVal(p.unit) || ''}</span>
-        </li>
-      `).join('')}
-    </ul>
-  `;
+  document.getElementById('modalBody').innerHTML =
+    '<div class="detail-grid">' +
+      '<div class="detail-row"><span class="detail-label">Solicitante</span><span class="detail-value"><strong>' + req.solicitante + '</strong></span></div>' +
+      '<div class="detail-row"><span class="detail-label">Area</span><span class="detail-value">' + req.area + '</span></div>' +
+      '<div class="detail-row"><span class="detail-label">Prioridad</span><span class="detail-value">' + badgePriority(req.prioridad) + '</span></div>' +
+      '<div class="detail-row"><span class="detail-label">Fecha requerida</span><span class="detail-value">' + formatDate(req.fechaRequerida) + '</span></div>' +
+      '<div class="detail-row"><span class="detail-label">Estado</span><span class="detail-value">' + badgeStatus(req.estado) + '</span></div>' +
+      '<div class="detail-row"><span class="detail-label">Enviada el</span><span class="detail-value">' + formatTs(req.createdAt) + '</span></div>' +
+      (req.notas ? '<div class="detail-row full"><span class="detail-label">Notas</span><span class="detail-value">' + req.notas + '</span></div>' : '') +
+    '</div>' +
+    '<div class="modal-section-title">Productos solicitados</div>' +
+    '<ul class="product-list">' + productosHtml + '</ul>';
 
   const isOpen = req.estado === 'pendiente';
-  document.getElementById('modalFooter').innerHTML = `
-    <button class="btn btn-ghost btn-sm" style="color:var(--danger);margin-right:auto" onclick="eliminarSolicitud('${req.id}')">🗑 Eliminar</button>
-    ${isOpen ? `
-      <button class="btn btn-ghost btn-sm" onclick="updateStatus('${req.id}','rechazado')">✗ Rechazar</button>
-      <button class="btn btn-primary btn-sm" onclick="updateStatus('${req.id}','aprobado')">✓ Aprobar</button>
-    ` : `
-      <button class="btn btn-ghost btn-sm" onclick="updateStatus('${req.id}','pendiente')">↩ Restablecer</button>
-    `}
-  `;
+  document.getElementById('modalFooter').innerHTML =
+    '<button class="btn btn-ghost btn-sm" style="color:var(--danger);margin-right:auto" onclick="eliminarSolicitud(\'' + req.id + '\')">Eliminar</button>' +
+    (isOpen
+      ? '<button class="btn btn-ghost btn-sm" onclick="updateStatus(\'' + req.id + '\',\'rechazado\')">Rechazar</button>' +
+        '<button class="btn btn-primary btn-sm" onclick="updateStatus(\'' + req.id + '\',\'aprobado\')">Aprobar</button>'
+      : '<button class="btn btn-ghost btn-sm" onclick="updateStatus(\'' + req.id + '\',\'pendiente\')">Restablecer</button>');
 
   document.getElementById('modal').classList.remove('hidden');
 }
@@ -374,7 +369,7 @@ function closeModal() {
 }
 
 async function eliminarSolicitud(id) {
-  if (!confirm('¿Eliminar esta solicitud permanentemente?')) return;
+  if (!confirm('Eliminar esta solicitud permanentemente?')) return;
   try {
     await db.collection('solicitudes').doc(id).delete();
     closeModal();
@@ -389,7 +384,7 @@ async function updateStatus(id, newStatus) {
   try {
     await db.collection('solicitudes').doc(id).update({ estado: newStatus });
     closeModal();
-    const msgs = { aprobado: '✓ Solicitud aprobada', rechazado: '✗ Solicitud rechazada', pendiente: '↩ Restablecida a pendiente' };
+    const msgs  = { aprobado: 'Solicitud aprobada', rechazado: 'Solicitud rechazada', pendiente: 'Restablecida a pendiente' };
     const types = { aprobado: 'success', rechazado: 'error', pendiente: 'info' };
     showToast(msgs[newStatus], types[newStatus]);
   } catch (err) {
@@ -400,45 +395,53 @@ async function updateStatus(id, newStatus) {
 
 // ── Formatters ───────────────────────────────────────────────────
 function formatTsTabla(ts) {
-  if (!ts) return '—';
+  if (!ts) return '-';
   const d = ts.toDate ? ts.toDate() : new Date(ts);
   const fecha = d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
   const hora  = d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
-  return `<span style="font-weight:600">${fecha}</span><br><small style="color:var(--text-muted)">${hora}</small>`;
+  return '<span style="font-weight:600">' + fecha + '</span><br><small style="color:var(--text-muted)">' + hora + '</small>';
 }
 
 function formatTs(ts) {
-  if (!ts) return '—';
+  if (!ts) return '-';
   const d = ts.toDate ? ts.toDate() : new Date(ts);
   const fecha = d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
   const hora  = d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
-  return `${fecha} — ${hora}`;
+  return fecha + ' - ' + hora;
 }
 
-
 function formatDate(str) {
-  if (!str) return '—';
+  if (!str) return '-';
   const [y, m, d] = str.split('-');
-  return `${d}/${m}/${y}`;
+  return d + '/' + m + '/' + y;
 }
 
 function badgeStatus(s) {
-  const map = { pendiente: ['badge-pending', '⏳ Pendiente'], aprobado: ['badge-approved', '✓ Aprobado'], rechazado: ['badge-rejected', '✗ Rechazado'] };
+  const map = {
+    pendiente: ['badge-pending',  'Pendiente'],
+    aprobado:  ['badge-approved', 'Aprobado'],
+    rechazado: ['badge-rejected', 'Rechazado']
+  };
   const [cls, label] = map[s] || ['badge-pending', s];
-  return `<span class="badge ${cls}">${label}</span>`;
+  return '<span class="badge ' + cls + '">' + label + '</span>';
 }
 
 function badgePriority(p) {
-  const map = { urgente: ['badge-urgent', '🔴 Urgente'], normal: ['badge-normal', 'Normal'], programado: ['badge-scheduled', '🗓️ Programado'] };
+  const map = {
+    urgente:   ['badge-urgent',    'Urgente'],
+    normal:    ['badge-normal',    'Normal'],
+    programado:['badge-scheduled', 'Programado']
+  };
   const [cls, label] = map[p] || ['badge-normal', p];
-  return `<span class="badge ${cls}">${label}</span>`;
+  return '<span class="badge ' + cls + '">' + label + '</span>';
 }
 
 let toastTimer;
-function showToast(msg, type = 'info') {
+function showToast(msg, type) {
+  type = type || 'info';
   const el = document.getElementById('toast');
   el.textContent = msg;
-  el.className = `toast ${type} show`;
+  el.className = 'toast ' + type + ' show';
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 4500);
 }
