@@ -1,4 +1,5 @@
 let allRequests = [];
+let allProducts  = [];   // catalogo en memoria para resolver nombres
 const DEFAULT_PIN = '1234';
 const AUTH_KEY = 'adminAuth_v2';
 let pinInput = '';
@@ -131,9 +132,8 @@ function initCatalogo() {
 function cargarCatalogoAdmin() {
   db.collection('productos')
     .onSnapshot(snap => {
-      const productos = snap.docs
-        .map(d => ({ id: d.id, ...d.data() }))
-        .sort((a, b) => a.categoria.localeCompare(b.categoria));
+      allProducts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const productos = allProducts.slice().sort((a, b) => a.categoria.localeCompare(b.categoria));
       renderCatalogo(productos);
     }, err => {
       console.error('Firestore error:', err);
@@ -334,9 +334,13 @@ function openDetail(id) {
   const productosHtml = productos.length === 0
     ? '<li style="color:var(--text-muted)">Sin productos registrados</li>'
     : productos.map(p => {
-        const nombre   = pVal(p.nombre) || pVal(p.name)  || '(sin nombre)';
+        // buscar en el catalogo por id para obtener el nombre real
+        const enCatalogo = allProducts.find(c => c.id === p.id);
+        const nombre   = (enCatalogo && (enCatalogo.nombre || enCatalogo.name))
+                         || pVal(p.nombre) || pVal(p.name) || '(sin nombre)';
+        const unidad   = (enCatalogo && (enCatalogo.unidad || enCatalogo.unit))
+                         || pVal(p.unidad) || pVal(p.unit) || '';
         const cantidad = p.cantidad != null ? p.cantidad : '?';
-        const unidad   = pVal(p.unidad) || pVal(p.unit)  || '';
         return '<li><span>' + nombre + '</span><span class="product-qty">' + cantidad + ' ' + unidad + '</span></li>';
       }).join('');
 
